@@ -1,6 +1,7 @@
 {
   "name": "playtini/mautic-sms-gateway-bundle",
   "description": "Mautic plugin to send messages via sms gateway",
+  "license": "MIT",
   "type": "mautic-plugin",
   "require": {
     "mautic/composer-plugin": "^1.0"
