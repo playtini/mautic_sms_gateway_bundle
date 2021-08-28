@@ -21,13 +21,6 @@ return [
             ],
         ],
         'others' => [
-            'mautic.sms_gateway.configuration' => [
-                'class' => Integration\SmsGateway\Configuration::class,
-                'arguments' => [
-                    'mautic.integrations.helper',
-                    'mautic.helper.encryption',
-                ]
-            ],
             'mautic.sms_gateway.transport' => [
                 'class' => Integration\SmsGateway\SmsGatewayTransport::class,
                 'arguments' => [
@@ -37,8 +30,16 @@ return [
                 ],
                 'tag' => 'mautic.sms_transport',
                 'tagArguments' => [
-                    'integrationAlias' => 'SmsGateway',
+                    'integrationAlias' => 'MauticSmsGateway',
                 ],
+                'alias' => 'mautic.sms.config.transport.sms_gateway',
+            ],
+            'mautic.sms_gateway.configuration' => [
+                'class' => Integration\SmsGateway\Configuration::class,
+                'arguments' => [
+                    'mautic.helper.integration',
+                    'mautic.helper.encryption',
+                ]
             ],
         ],
     ],
