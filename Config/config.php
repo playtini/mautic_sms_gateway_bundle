@@ -6,14 +6,14 @@ return [
     'version' => '1.0.0',
     'services' => [
         'integrations' => [
-            'mautic.integration.MauticSmsGateway' => [
+            'mautic.integration.mauticsmsgateway' => [
                 'class' => Integration\MauticSmsGatewayIntegration::class,
                 'tags' => [
                     'mautic.integration',
                     'mautic.basic_integration',
                 ],
             ],
-            'MauticSmsGateway.integration.configuration' => [
+            'mauticsmsgateway.integration.configuration' => [
                 'class' => Integration\Support\ConfigSupport::class,
                 'tags' => [
                     'mautic.config_integration',

@@ -10,7 +10,7 @@ use Mautic\SmsBundle\Sms\TransportInterface;
 use MauticPlugin\MauticSmsGatewayBundle\Integration\Exceptions\SmsGatewayException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Joomla\Http\Http;
+use Psr\Http\Client\ClientInterface;
 
 class SmsGatewayTransport implements TransportInterface
 {
@@ -25,16 +25,16 @@ class SmsGatewayTransport implements TransportInterface
     private $logger;
 
     /**
-     * @var Http
+     * @var ClientInterface
      */
     private $client;
 
     /**
      * SmsGatewayTransport constructor.
      */
-    public function __construct(Http $http, Configuration $configuration, LoggerInterface $logger)
+    public function __construct(ClientInterface $client, Configuration $configuration, LoggerInterface $logger)
     {
-        $this->client = $http;
+        $this->client = $client;
         $this->configuration = $configuration;
         $this->logger = $logger;
     }
@@ -54,22 +54,25 @@ class SmsGatewayTransport implements TransportInterface
 
         try {
             $response = $this->client->post($this->configuration->getGatewayUrl(), [
-                'phone_number' => $leadPhoneNumber,
-                'message' => $content,
-            ], [
-                'Content-Type' => 'application/json',
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => [
+                    'phone_number' => $leadPhoneNumber,
+                    'message' => $content,
+                ]
             ]);
 
-            if (!in_array($response->code, [Response::HTTP_OK, Response::HTTP_CREATED])) {
+            if (!in_array($response->getStatusCode(), [Response::HTTP_OK, Response::HTTP_CREATED])) {
                 $this->logger->error('Sms not send', [
-                    'response' => $response->body,
+                    'response' => $response->getBody()->getContents(),
                     'body' => [
                         'phone_number' => $leadPhoneNumber,
                         'message' => $content,
                     ]
                 ]);
 
-                throw new SmsGatewayException("SmsGateway couldn't send message: " . $response->code);
+                throw new SmsGatewayException("SmsGateway couldn't send message: " . $response->getStatusCode());
             }
         } catch (SmsGatewayException $e) {
             return $e->getMessage();
