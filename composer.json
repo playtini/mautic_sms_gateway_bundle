@@ -4,7 +4,6 @@
   "license": "MIT",
   "type": "mautic-plugin",
   "require": {
-    "mautic/composer-plugin": "^1.0",
-    "ricardofiorani/guzzle-psr18-adapter": "^1.0"
+    "mautic/composer-plugin": "^1.0"
   }
 }

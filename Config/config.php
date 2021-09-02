@@ -24,7 +24,7 @@ return [
             'mautic.sms_gateway.transport' => [
                 'class' => Integration\SmsGateway\SmsGatewayTransport::class,
                 'arguments' => [
-                    'mautic.http.connector',
+                    'mautic.http.client',
                     'mautic.sms_gateway.configuration',
                     'monolog.logger.mautic',
                 ],
