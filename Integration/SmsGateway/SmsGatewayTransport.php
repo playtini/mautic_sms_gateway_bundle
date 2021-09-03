@@ -53,23 +53,22 @@ class SmsGatewayTransport implements TransportInterface
         }
 
         try {
+            $contentBody = [
+                'phone_number' => $leadPhoneNumber,
+                'message' => $content,
+            ];
+
             $response = $this->client->post($this->configuration->getGatewayUrl(), [
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
-                'body' => [
-                    'phone_number' => $leadPhoneNumber,
-                    'message' => $content,
-                ]
+                'body' => json_encode($contentBody),
             ]);
 
             if (!in_array($response->getStatusCode(), [Response::HTTP_OK, Response::HTTP_CREATED])) {
                 $this->logger->error('Sms not send', [
                     'response' => $response->getBody()->getContents(),
-                    'body' => [
-                        'phone_number' => $leadPhoneNumber,
-                        'message' => $content,
-                    ]
+                    'body' => $contentBody,
                 ]);
 
                 throw new SmsGatewayException("SmsGateway couldn't send message: " . $response->getStatusCode());
