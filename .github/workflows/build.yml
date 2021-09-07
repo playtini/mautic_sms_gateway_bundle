@@ -1,0 +1,58 @@
+name: Build new version
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - master
+      - develop
+      - hotfix
+    tags:
+      - 'v*.*.*'
+
+concurrency: 
+  group: ci-${{ github.ref }}-${{ github.head_ref }}
+  cancel-in-progress: true
+ 
+jobs:
+  build:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    outputs:
+      newTag: ${{ steps.latest_version.outputs.tag }}
+      dockerBuildResult: ${{ steps.build_image.outcome }}
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 10
+
+      - name: extract branch name
+        id: branch_name
+        run: ref=$(echo ${{ github.ref }} | sed 's@.*/@@') && echo $ref && echo "::set-output name=ref::$ref"
+
+      - name: extract repo name 
+        id: repo_name
+        run: repo=$(echo ${{ github.repository }} | sed 's@.*/@@') && echo $repo && echo "::set-output name=repo::$repo"
+
+      - name: Bump version and push tag
+        uses: playtini/github-tag-action@master
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          SUFFIX: ${{ steps.branch_name.outputs.ref }}
+
+      - name: Determine latest tracker version 
+        id: latest_version
+        uses: flownative/action-git-latest-release@master
+
+  cleanUp:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 🌲🌳🦌🐿🌳 Remove tag becaues build failed
+        if: needs.build.outputs.dockerBuildResult == 'failure'
+        run: |
+          echo "Remove git tag by failure (${{ needs.build.outputs.newTag }})"
+          git tag -d ${{ needs.build.outputs.newTag }} && git push origin :refs/tags/${{ needs.build.outputs.newTag }}
+          exit 1
