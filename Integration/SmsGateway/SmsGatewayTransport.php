@@ -52,17 +52,31 @@ class SmsGatewayTransport implements TransportInterface
             return false;
         }
 
+        $contentBody = [
+            'phone_number' => $leadPhoneNumber,
+            'message' => $content,
+        ];
+        
         try {
-            $contentBody = [
-                'phone_number' => $leadPhoneNumber,
-                'message' => $content,
+            $customFields = [
+                'category' => $lead->rv_category,
+                'currency' => $lead->rv_currency,
             ];
+        } catch (\Exception $e) {
+            $customFields = [];
+            
+            $this->logger->error('get_custom_field_error', [
+                'msg' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
 
+        try {
             $response = $this->client->post($this->configuration->getGatewayUrl(), [
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
-                'body' => json_encode($contentBody),
+                'body' => json_encode(array_merge($contentBody, $customFields)),
             ]);
 
             if (!in_array($response->getStatusCode(), [Response::HTTP_OK, Response::HTTP_CREATED])) {
