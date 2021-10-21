@@ -65,18 +65,20 @@ class SmsGatewayTransport implements TransportInterface
         } catch (\Exception $e) {
             $customFields = [];
             
-            $this->logger->error('get_custom_field_error', [
+            $this->logger->error('sms_gateway_transport.get_custom_field_error', [
                 'msg' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }
 
         try {
+            $contentBody = array_merge($contentBody, $customFields);
+            
             $response = $this->client->post($this->configuration->getGatewayUrl(), [
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
-                'body' => json_encode(array_merge($contentBody, $customFields)),
+                'body' => json_encode($contentBody),
             ]);
 
             if (!in_array($response->getStatusCode(), [Response::HTTP_OK, Response::HTTP_CREATED])) {
@@ -90,6 +92,10 @@ class SmsGatewayTransport implements TransportInterface
         } catch (SmsGatewayException $e) {
             return $e->getMessage();
         }
+        
+        $this->logger->info('sms_gateway_transport.send', [
+            'params' => $contentBody,
+        ]);
 
         return true;
     }
