@@ -5,6 +5,17 @@ namespace MauticPlugin\MauticSmsGatewayBundle;
 return [
     'version' => '1.0.0',
     'services' => [
+        'events' => [
+            'mautic_integration.mauticsmsgateway.send_sms.subscriber' => [
+                'class'     => Integration\EventListener\SendSmsSubscriber::class,
+                'arguments' => [
+                    'mautic.http.client',
+                    'mautic.sms_gateway.configuration',
+                    'doctrine.orm.entity_manager',
+                    'monolog.logger.mautic',
+                ],
+            ],
+        ],
         'integrations' => [
             'mautic.integration.mauticsmsgateway' => [
                 'class' => Integration\MauticSmsGatewayIntegration::class,
@@ -24,8 +35,6 @@ return [
             'mautic.sms_gateway.transport' => [
                 'class' => Integration\SmsGateway\SmsGatewayTransport::class,
                 'arguments' => [
-                    'mautic.http.client',
-                    'mautic.sms_gateway.configuration',
                     'monolog.logger.mautic',
                 ],
                 'tag' => 'mautic.sms_transport',
