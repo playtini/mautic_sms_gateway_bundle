@@ -100,7 +100,7 @@ class SendSmsSubscriber implements EventSubscriberInterface
             $contentBody = [
                 'phone_number' => $leadPhoneNumber,
                 'message' => $sms->getMessage(),
-                'category' => $sms->getCategory(),
+                'category' => $sms->getCategory()->getTitle(),
                 'currency' => $lead->rv_currency,
             ];
 
