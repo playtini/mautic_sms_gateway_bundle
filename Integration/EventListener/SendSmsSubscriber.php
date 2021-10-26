@@ -7,6 +7,7 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Mautic\LeadBundle\Entity\Lead;
+use Mautic\LeadBundle\Helper\TokenHelper;
 use Mautic\SmsBundle\Entity\Sms;
 use Mautic\SmsBundle\Event\SmsSendEvent;
 use Mautic\SmsBundle\SmsEvents;
@@ -24,11 +25,11 @@ class SendSmsSubscriber implements EventSubscriberInterface
     private Configuration $configuration;
 
     private EntityManagerInterface $em;
-    
+
     private LoggerInterface $logger;
 
     public function __construct(
-        ClientInterface $client, 
+        ClientInterface $client,
         Configuration $configuration,
         EntityManagerInterface $em,
         LoggerInterface $logger
@@ -46,17 +47,18 @@ class SendSmsSubscriber implements EventSubscriberInterface
             SmsEvents::SMS_ON_SEND => 'smsOnSend',
         ];
     }
-    
+
     public function smsOnSend(SmsSendEvent $event): void
     {
         $lead = $event->getLead();
+
         $sms = $this->checkRequiredConditionsAndGetSms($event->getSmsId());
-        
+
         if ($sms) {
             $this->send($lead, $sms);
         }
     }
-    
+
     private function checkRequiredConditionsAndGetSms(int $smsId): ?Sms
     {
         /** @var Sms $sms */
@@ -66,7 +68,7 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 'msg' => 'Message not found',
                 'sms_id' => $smsId,
             ]);
-            
+
             return null;
         }
 
@@ -76,13 +78,13 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 'msg' => 'Message category is empty',
                 'sms_id' => $smsId,
             ]);
-            
+
             return null;
         }
-        
+
         return $sms;
     }
-    
+
     private function send(Lead $lead, Sms $sms): void
     {
         $leadPhoneNumber = $lead->getLeadPhoneNumber();
@@ -92,14 +94,14 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 'msg' => 'Lead phone number not found',
                 'lead_id' => $lead->getId(),
             ]);
-            
+
             return;
         }
 
         try {
             $contentBody = [
                 'phone_number' => $leadPhoneNumber,
-                'message' => $sms->getMessage(),
+                'message' => $this->contentTokenReplace($lead, $sms->getMessage()),
                 'category' => $sms->getCategory()->getTitle(),
                 'currency' => $lead->rv_currency,
             ];
@@ -143,5 +145,14 @@ class SendSmsSubscriber implements EventSubscriberInterface
         $parsed = $util->parse($number, 'US');
 
         return $util->format($parsed, PhoneNumberFormat::E164);
+    }
+
+    public function contentTokenReplace(Lead $lead, string $content)
+    {
+        $tokens = array_merge(
+            TokenHelper::findLeadTokens($content, $lead->getProfileFields()),
+        );
+
+        return str_replace(array_keys($tokens), array_values($tokens), $content);
     }
 }
