@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SendSmsSubscriber implements EventSubscriberInterface
 {
+    const CUSTOM_SMS_ID = 21;
+
     private ClientInterface $client;
 
     private Configuration $configuration;
@@ -104,7 +106,12 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 'message' => $this->contentTokenReplace($lead, $sms->getMessage()),
                 'category' => $sms->getCategory()->getTitle(),
                 'currency' => $lead->rv_currency,
+                'custom_sms' => false
             ];
+
+            if ($sms->getId() == self::CUSTOM_SMS_ID) {
+                $contentBody['custom_sms'] = true;
+            }
 
             $response = $this->client->post($this->configuration->getGatewayUrl(), [
                 'headers' => [
