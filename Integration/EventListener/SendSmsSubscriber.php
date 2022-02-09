@@ -111,6 +111,7 @@ class SendSmsSubscriber implements EventSubscriberInterface
 
             if ($sms->getId() == self::CUSTOM_SMS_ID) {
                 $contentBody['custom_sms'] = true;
+                $contentBody['operator_name'] = $lead->operator_name;
             }
 
             $response = $this->client->post($this->configuration->getGatewayUrl(), [
