@@ -1,11 +1,25 @@
-# Sms gateway plugin
+Sms gateway plugin
+==============
 
-Плагин для маутика https://github.com/playtini/mautic_base. Предназначен для отправки смс-сообщений через кастомных провайдеров. Данный плагин перехватывает событие отправки сообщения и перенаправляет его на `https://sms-api-gateway.n0d.dev` https://github.com/playtini/sms_api_gateway Определение провайдера происходит на стороне гейта на основании категории сообщения которая передается параметром. На текущий момент имплементированы интеграции:
+Mautic plugin https://github.com/playtini/mautic_base. Designed to send SMS messages through custom providers. This plugin intercepts the message sending event and redirects it to `https://sms-api-gateway.n0d.dev` https://github.com/playtini/sms_api_gateway The provider is determined on the gate side based on the message category that is passed as a parameter. Currently implemented integrations:
 - [Twilio](https://www.twilio.com/)
 - [Prostor](https://prostor-sms.ru/)
 
-[Структура плагинов и установка](https://developer.mautic.org/#plugins)
+Run
+---
+[Mautic plugin's installation](https://developer.mautic.org/#plugins)
 
-Для связи с смс-гейтом маутик должен иметь енв с его урлом:
+To communicate with the sms-gate, the mutik must have an env with its url
 
     MAUTIC_CONFIG_SMS_API_GATE_URL=https://sms-api-gateway.n0d.dev
+
+Usage
+-----
+
+Params passed to sms gate example:
+
+    'phone_number' => '+380501111111',
+    'message' => 'test',
+    'category' => 'Prostor',
+    'currency' => 'RUB',
+    'custom_sms' => false
