@@ -23,7 +23,7 @@ class Configuration
      * @var string
      */
     private $gatewayUrl;
-    
+
     public function __construct(IntegrationHelper $integrationHelper, EncryptionHelper $encryptionHelper)
     {
         $this->integrationHelper = $integrationHelper;
@@ -32,13 +32,13 @@ class Configuration
 
     /**
      * @return string
-     * 
+     *
      * @throws SmsGatewayException
      */
     public function getGatewayUrl(): string
     {
         $this->setConfiguration();
-        
+
         return $this->gatewayUrl;
     }
 
@@ -56,18 +56,21 @@ class Configuration
         if (!$integration || !$integration->getIntegrationSettings()->getIsPublished()) {
             throw new SmsGatewayException();
         }
-        
+
         $keys = $this->decryptApiKeys($integration->getIntegrationSettings()->getApiKeys());
         if (empty($keys['gatewayUrl'])) {
             throw new SmsGatewayException();
         }
 
         $this->gatewayUrl = $keys['gatewayUrl'];
+
+        // TODO: find how to fix it correctly and remove
+        $this->gatewayUrl = str_replace('sms-api-gateway.n0d.dev', 'sms-gateway.p777.org', $this->gatewayUrl);
     }
 
     /**
      * @param array $keys
-     * 
+     *
      * @return array
      */
     private function decryptApiKeys(array $keys): array
