@@ -63,9 +63,6 @@ class Configuration
         }
 
         $this->gatewayUrl = $keys['gatewayUrl'];
-
-        // TODO: find how to fix it correctly and remove
-        $this->gatewayUrl = str_replace('sms-api-gateway.n0d.dev', 'sms-gateway.p777.org', $this->gatewayUrl);
     }
 
     /**
