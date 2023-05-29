@@ -10,10 +10,10 @@ on:
     tags:
       - 'v*.*.*'
 
-concurrency: 
+concurrency:
   group: ci-${{ github.ref }}-${{ github.head_ref }}
   cancel-in-progress: true
- 
+
 jobs:
   build:
     continue-on-error: true
@@ -28,21 +28,21 @@ jobs:
 
       - name: extract branch name
         id: branch_name
-        run: ref=$(echo ${{ github.ref }} | sed 's@.*/@@') && echo $ref && echo "::set-output name=ref::$ref"
+        run: ref=$(echo ${{ github.ref }} | sed 's@.*/@@') && echo $ref && echo "ref=$ref" >> $GITHUB_OUTPUT
 
-      - name: extract repo name 
+      - name: extract repo name
         id: repo_name
-        run: repo=$(echo ${{ github.repository }} | sed 's@.*/@@') && echo $repo && echo "::set-output name=repo::$repo"
+        run: repo=$(echo ${{ github.repository }} | sed 's@.*/@@') && echo $repo && echo "repo=$repo" >> $GITHUB_OUTPUT
 
       - name: Bump version and push tag
         uses: playtini/github-tag-action@master
-        env: 
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
           DEFAULT_BUMP: patch
           SUFFIX: ${{ steps.branch_name.outputs.ref }}
 
-      - name: Determine latest tracker version 
+      - name: Determine latest tracker version
         id: latest_version
         uses: flownative/action-git-latest-release@master
 
