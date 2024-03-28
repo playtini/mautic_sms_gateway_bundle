@@ -15,6 +15,6 @@ return function (ContainerConfigurator $configurator) {
     $excludes = [
     ];
 
-    $services->load('MauticPlugin\\MauticAdvancedTemplatesBundle\\', '../')
+    $services->load('MauticPlugin\\MauticSmsGatewayBundle\\', '../')
         ->exclude('../{'.implode(',', array_merge(MauticCoreExtension::DEFAULT_EXCLUDES, $excludes)).'}');
 };
