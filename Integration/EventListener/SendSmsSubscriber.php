@@ -3,6 +3,7 @@
 namespace MauticPlugin\MauticSmsGatewayBundle\Integration\EventListener;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Psr7\Request;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -114,12 +115,16 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 $contentBody['operator_name'] = $lead->operator_name;
             }
 
-            $response = $this->client->post($this->configuration->getGatewayUrl(), [
-                'headers' => [
+            $request  = new Request(
+                'POST',
+                $this->configuration->getGatewayUrl(),
+                [
                     'Content-Type' => 'application/json',
                 ],
-                'body' => json_encode($contentBody),
-            ]);
+                json_encode($contentBody)
+            );
+
+            $response = $this->client->send($request);
 
             if (!in_array($response->getStatusCode(), [Response::HTTP_OK, Response::HTTP_CREATED])) {
                 $this->logger->error('sms_gateway.send', [
