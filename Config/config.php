@@ -7,7 +7,7 @@ return [
     'services' => [
         'events' => [
             'mautic_integration.mauticsmsgateway.send_sms.subscriber' => [
-                'class'     => MauticPlugin\MauticSmsGatewayBundle\Integration\EventListener\SendSmsSubscriber::class,
+                'class'     => \MauticPlugin\MauticSmsGatewayBundle\Integration\EventListener\SendSmsSubscriber::class,
                 'arguments' => [
                     'mautic.http.client',
                     'mautic.sms_gateway.configuration',
@@ -18,14 +18,14 @@ return [
         ],
         'integrations' => [
             'mautic.integration.mauticsmsgateway' => [
-                'class' => MauticPlugin\MauticSmsGatewayBundle\Integration\MauticSmsGatewayIntegration::class,
+                'class' => \MauticPlugin\MauticSmsGatewayBundle\Integration\MauticSmsGatewayIntegration::class,
                 'tags' => [
                     'mautic.integration',
                     'mautic.basic_integration',
                 ],
             ],
             'mauticsmsgateway.integration.configuration' => [
-                'class' => MauticPlugin\MauticSmsGatewayBundle\Integration\Support\ConfigSupport::class,
+                'class' => \MauticPlugin\MauticSmsGatewayBundle\Integration\Support\ConfigSupport::class,
                 'tags' => [
                     'mautic.config_integration',
                 ],
@@ -33,7 +33,7 @@ return [
         ],
         'others' => [
             'mautic.sms_gateway.transport' => [
-                'class' => MauticPlugin\MauticSmsGatewayBundle\Integration\SmsGateway\SmsGatewayTransport::class,
+                'class' => \MauticPlugin\MauticSmsGatewayBundle\Integration\SmsGateway\SmsGatewayTransport::class,
                 'arguments' => [
                     'monolog.logger.mautic',
                 ],
@@ -44,7 +44,7 @@ return [
                 'alias' => 'mautic.sms.config.transport.sms_gateway',
             ],
             'mautic.sms_gateway.configuration' => [
-                'class' => MauticPlugin\MauticSmsGatewayBundle\Integration\SmsGateway\Configuration::class,
+                'class' => \MauticPlugin\MauticSmsGatewayBundle\Integration\SmsGateway\Configuration::class,
                 'arguments' => [
                     'mautic.helper.integration',
                     'mautic.helper.encryption',
