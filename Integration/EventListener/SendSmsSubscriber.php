@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SendSmsSubscriber implements EventSubscriberInterface
 {
-    const CUSTOM_SMS_ID = 21;
+    const CUSTOM_SMS_IDS = [21, 59];
 
     private ClientInterface $client;
 
@@ -106,10 +106,11 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 'message' => $this->contentTokenReplace($lead, $sms->getMessage()),
                 'category' => $sms->getCategory()->getTitle(),
                 'currency' => $lead->rv_currency,
-                'custom_sms' => false
+                'custom_sms' => false,
+                'player_id' => $lead->rv_uid,
             ];
 
-            if ($sms->getId() == self::CUSTOM_SMS_ID) {
+            if (in_array($sms->getId(), self::CUSTOM_SMS_IDS)) {
                 $contentBody['custom_sms'] = true;
                 $contentBody['operator_name'] = $lead->operator_name;
             }
