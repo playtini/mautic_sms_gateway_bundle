@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SendSmsSubscriber implements EventSubscriberInterface
 {
-    const CUSTOM_SMS_ID = 21;
+    const CUSTOM_SMS_IDS = [];
 
     private ClientInterface $client;
 
@@ -58,7 +58,7 @@ class SendSmsSubscriber implements EventSubscriberInterface
         $sms = $this->checkRequiredConditionsAndGetSms($event->getSmsId());
 
         if ($sms) {
-            $this->send($lead, $sms);
+            $this->send($lead, $sms, $event->getStatId());
         }
     }
 
@@ -88,7 +88,7 @@ class SendSmsSubscriber implements EventSubscriberInterface
         return $sms;
     }
 
-    private function send(Lead $lead, Sms $sms): void
+    private function send(Lead $lead, Sms $sms, $statId = null): void
     {
         $leadPhoneNumber = $lead->getLeadPhoneNumber();
 
@@ -107,10 +107,13 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 'message' => $this->contentTokenReplace($lead, $sms->getMessage()),
                 'category' => $sms->getCategory()->getTitle(),
                 'currency' => $lead->rv_currency,
-                'custom_sms' => false
+                'custom_sms' => false,
+                'player_id' => $lead->rv_uid,
+                'mautic_uid' => $statId,
+                'mautic_name' => $sms->getName()
             ];
 
-            if ($sms->getId() == self::CUSTOM_SMS_ID) {
+            if (in_array($sms->getId(), self::CUSTOM_SMS_IDS)) {
                 $contentBody['custom_sms'] = true;
                 $contentBody['operator_name'] = $lead->operator_name;
             }
