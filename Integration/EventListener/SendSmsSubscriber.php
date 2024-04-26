@@ -110,7 +110,8 @@ class SendSmsSubscriber implements EventSubscriberInterface
                 'custom_sms' => false,
                 'player_id' => $lead->rv_uid,
                 'mautic_uid' => $statId,
-                'mautic_name' => $sms->getName()
+                'mautic_name' => $sms->getName(),
+                'project' => 'VSTK-KZ',
             ];
 
             if (in_array($sms->getId(), self::CUSTOM_SMS_IDS)) {
