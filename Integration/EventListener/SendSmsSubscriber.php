@@ -136,7 +136,7 @@ class SendSmsSubscriber implements EventSubscriberInterface
                     'body' => $contentBody,
                 ]);
             }
-        } catch (SmsGatewayException $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('sms_gateway.send', [
                 'msg' => $e->getMessage(),
                 'params' => $contentBody,
