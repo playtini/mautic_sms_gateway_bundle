@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SendSmsSubscriber implements EventSubscriberInterface
 {
-    const CUSTOM_SMS_IDS = [];
+    const CUSTOM_SMS_IDS = [23, 24];
 
     private ClientInterface $client;
 
