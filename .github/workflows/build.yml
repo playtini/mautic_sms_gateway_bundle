@@ -44,7 +44,7 @@ jobs:
 
       - name: Determine latest tracker version
         id: latest_version
-        uses: flownative/action-git-latest-release@master
+        uses: flownative/action-git-latest-release@v1.1.2
 
   cleanUp:
     runs-on: ubuntu-latest
